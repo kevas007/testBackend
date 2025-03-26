@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
  Schema::create('depenses', function (Blueprint $table) {
-     $table->id();
-     $table->text('titre');
-     $table->text('description');
-     $table->float('montant');
-     $table-> string('src');
-     $table->date('date');
-     $table->foreignId('categories')->constrained();
-     $table->timestamps();
+         $table->id();
+         $table->text('titre');
+         $table->text('description');
+         $table->float('montant');
+         $table-> string('src');
+         $table->date('date');
+         $table->foreignId('categories')->constrained();
+         $table->timestamps();
         });
     }
 
