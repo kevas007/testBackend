@@ -13,10 +13,11 @@ class CategorieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index():JsonResource
+    public function index()
     {
         try {
             $categorie = Categorie::with('depense')->get();
+
             return response()->json([
                 'message' => 'get all  projects',
                 'data'   => $categorie,
@@ -30,7 +31,7 @@ class CategorieController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) :JsonResource
+    public function store(Request $request)
     {
      try {
          $validated = $request->validate([
@@ -51,7 +52,7 @@ class CategorieController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Categorie $categorie):JsonResource
+    public function show(Categorie $categorie)
     {
         try {
             return response()->json([
@@ -67,7 +68,7 @@ class CategorieController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Categorie $categorie):JsonResource
+    public function update(Request $request, Categorie $categorie)
     {
         try {
             $validated = $request->validate([
@@ -87,7 +88,7 @@ class CategorieController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Categorie $categorie):JsonResource
+    public function destroy(Categorie $categorie)
     {
         try {
             $categorie->delete();

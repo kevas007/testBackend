@@ -11,7 +11,7 @@ class DepenseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index():JsonResource
+    public function index()
     {
         try {
             $depenses = Depense::all();
@@ -31,7 +31,7 @@ class DepenseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request):JsonResource
+    public function store(Request $request)
     {
         try {
             $validatedData = $request->validate([
@@ -64,7 +64,7 @@ class DepenseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Depense $depense):JsonResource
+    public function show(Depense $depense)
     {
         try {
             return response()->json([
