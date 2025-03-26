@@ -14,11 +14,11 @@ return new class extends Migration
  Schema::create('depenses', function (Blueprint $table) {
          $table->id();
          $table->text('titre');
-         $table->text('description');
+         $table->text('description')->nullable();
          $table->float('montant');
-         $table-> string('src');
+         $table-> string('src')->nullable();
          $table->date('date');
-         $table->foreignId('categories')->constrained();
+         $table->foreignId('categorie_id')->constrained();
          $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('depenses');
     }
 };
