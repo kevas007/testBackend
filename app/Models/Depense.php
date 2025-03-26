@@ -17,4 +17,8 @@ class Depense extends Model
         'src'
 
     ];
+
+    public function categorie(){
+        return $this->hasOne(Categorie::class);
+    }
 }

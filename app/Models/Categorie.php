@@ -10,4 +10,8 @@ class Categorie extends Model
 {
     use HasFactory;
     protected $fillable = [ 'nom'];
+    public function depense()
+    {
+        return $this->hasMany(Depense::class);
+    }
 }
