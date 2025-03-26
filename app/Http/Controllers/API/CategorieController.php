@@ -16,7 +16,7 @@ class CategorieController extends Controller
     public function index():JsonResource
     {
         try {
-            $categorie = Categorie::all();
+            $categorie = Categorie::with('depense')->get();
             return response()->json([
                 'message' => 'get all  projects',
                 'data'   => $categorie,
@@ -96,6 +96,20 @@ class CategorieController extends Controller
             ],200);
         }
         catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function State()
+    {
+        try {
+            $categorie = Categorie::with('depense')->get()
+                ->sum('depense.montant');
+            return response()->json([
+                'categorie' => $categorie,
+            ],200);
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
