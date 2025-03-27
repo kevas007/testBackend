@@ -18,7 +18,7 @@ return new class extends Migration
          $table->float('montant');
          $table-> string('src')->nullable();
          $table->date('date');
-         $table->foreignId('categorie_id')->constrained();
+     $table->foreignId('categorie_id')->constrained('categories')->onDelete('cascade');
          $table->timestamps();
         });
     }
