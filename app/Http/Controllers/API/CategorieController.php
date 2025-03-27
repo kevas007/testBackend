@@ -100,6 +100,7 @@ class CategorieController extends Controller
     public function destroy(Categorie $categorie)
     {
         try {
+            $categorie->depense()->delete();
             $categorie->delete();
             return response()->json([
                 'message' => 'delete project'
