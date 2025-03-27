@@ -14,7 +14,7 @@ class DepenseController extends Controller
     public function index()
     {
         try {
-            $depenses = Depense::all();
+            $depenses = Depense::with('categorie')->get();
             return response()->json([
                 'message' => 'success',
                 'data' => $depenses,
@@ -39,17 +39,23 @@ class DepenseController extends Controller
                 'montant' => 'required|numeric',
                 'date' => 'required|date',
                 'categorie_id' => 'required|exists:categories,id',
-                'src' => 'nullable|string|max:255',
+                'src' => 'nullable|file|mimes:pdf|max:2048',
                 'description' => 'nullable|string',
             ]);
 
-            // Créer uniquement avec les champs présents
+            // Traitement du fichier justificatif (PDF)
+            if ($request->hasFile('src')) {
+                $path = $request->file('src')->store('justificatifs', 'public');
+                $validatedData['src'] = $path;
+            }
+
             $depense = Depense::create($validatedData);
 
             return response()->json([
                 'message' => 'Dépense créée avec succès.',
                 'data' => $depense,
             ], 201);
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Une erreur est survenue.',
@@ -85,20 +91,32 @@ class DepenseController extends Controller
         try {
             $validatedData = $request->validate([
                 'titre' => 'required|string|max:255',
-                'montant' => 'required|numeric|min:0',
+                'montant' => 'required|numeric',
                 'date' => 'required|date',
                 'categorie_id' => 'required|exists:categories,id',
-                'src' => 'nullable|string|max:255',
+                'src' => 'nullable|file|mimes:pdf|max:2048',
                 'description' => 'nullable|string',
             ]);
 
-            // Mise à jour directe avec les champs validés
+            // Si un nouveau fichier PDF est envoyé, remplace l'ancien
+            if ($request->hasFile('src')) {
+                // Supprimer l'ancien fichier si présent
+                if ($depense->src && \Storage::disk('public')->exists($depense->src)) {
+                    \Storage::disk('public')->delete($depense->src);
+                }
+
+                // Enregistrer le nouveau fichier
+                $path = $request->file('src')->store('justificatifs', 'public');
+                $validatedData['src'] = $path;
+            }
+
             $depense->update($validatedData);
 
             return response()->json([
                 'message' => 'Dépense mise à jour avec succès.',
                 'data' => $depense,
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Une erreur est survenue.',
@@ -106,6 +124,7 @@ class DepenseController extends Controller
             ], 500);
         }
     }
+
 
 
     /**
