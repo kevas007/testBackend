@@ -37,7 +37,7 @@ class CategorieController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
             ]);
-
+            // Création
             $categorie = Categorie::create($validated);
 
             return response()->json([
@@ -82,7 +82,7 @@ class CategorieController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255'
             ]);
-
+            // Mise à jour
             $categorie->update($validated);
 
             return response()->json([
