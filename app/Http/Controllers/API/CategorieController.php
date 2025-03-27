@@ -33,20 +33,24 @@ class CategorieController extends Controller
      */
     public function store(Request $request)
     {
-     try {
-         $validated = $request->validate([
-             'name' => 'required|string|max:255',
-         ]);
-         $categorie = Categorie::create($request->all());
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
 
-         return response()->json([
-             'message' => 'create project',
-             'data' => $categorie,
-         ],201);
-     }
-     catch (\Exception $e) {
-             return response()->json(['error' => $e->getMessage()], 500);
-         }
+            $categorie = Categorie::create($validated);
+
+            return response()->json([
+                'message' => 'Catégorie créée avec succès.',
+                'data' => $categorie,
+            ], 201);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Une erreur est survenue.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+
     }
 
     /**
@@ -55,15 +59,19 @@ class CategorieController extends Controller
     public function show(Categorie $categorie)
     {
         try {
+
             return response()->json([
-                'message' => 'get project',
+                'message' => 'Catégorie récupérée avec succès.',
                 'data' => $categorie,
-            ],200);
-        }
-        catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Une erreur est survenue.',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -74,13 +82,14 @@ class CategorieController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255'
             ]);
-            $categorie->update($request->all());
+
+            $categorie->update($validated);
+
             return response()->json([
-                'message' => 'update project',
+                'message' => 'Catégorie mise à jour avec succès.',
                 'data' => $categorie
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -102,13 +111,13 @@ class CategorieController extends Controller
 
     }
 
-    public function State()
+    public function getState()
     {
         try {
-            $categorie = Categorie::with('depense')->get()
-                ->sum('depense.montant');
+            $state = Categorie::withSum('depense', 'montant')->get();
             return response()->json([
-                'categorie' => $categorie,
+                "message" => "toutes les statistiques",
+                'data' => $state,
             ],200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

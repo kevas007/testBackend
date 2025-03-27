@@ -35,31 +35,29 @@ class DepenseController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'titre' => 'required',
-                'montant' => 'required|float',
-                'date' => 'required',
-                'categorie_id' => 'required'
-
+                'titre' => 'required|string|max:255',
+                'montant' => 'required|numeric',
+                'date' => 'required|date',
+                'categorie_id' => 'required|exists:categories,id',
+                'src' => 'nullable|string|max:255',
+                'description' => 'nullable|string',
             ]);
-            $depense = new Depense();
-            $depense['titre'] = $validatedData['titre'];
-            $depense['montant'] = $validatedData['montant'];
-            $depense['date'] = $validatedData['date'];
-            $depense['categorie_id'] = $validatedData['categorie_id'];
-            $depense['src'] = $validatedData['src'] ?? null;
-            $depense['description'] = $validatedData['description'] ?? null;
-            $depense->save();
+
+            // Créer uniquement avec les champs présents
+            $depense = Depense::create($validatedData);
+
             return response()->json([
-                'message' => 'create project',
+                'message' => 'Dépense créée avec succès.',
                 'data' => $depense,
-            ],201);
-        }
-        catch (\Exception $e) {
+            ], 201);
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->getMessage(),
-            ],500);
+                'error' => 'Une erreur est survenue.',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -86,29 +84,29 @@ class DepenseController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'titre' => 'required',
-                'montant' => 'required|float',
-                'date' => 'required',
-                'categorie_id' => 'required'
+                'titre' => 'required|string|max:255',
+                'montant' => 'required|numeric|min:0',
+                'date' => 'required|date',
+                'categorie_id' => 'required|exists:categories,id',
+                'src' => 'nullable|string|max:255',
+                'description' => 'nullable|string',
             ]);
-            $depense['titre'] = $validatedData['titre'];
-            $depense['montant'] = $validatedData['montant'];
-            $depense['date'] = $validatedData['date'];
-            $depense['categorie_id'] = $validatedData['categorie_id'];
-            $depense['src'] = $validatedData['src'] ?? null;
-            $depense['description'] = $validatedData['description'] ?? null;
-            $depense->save();
+
+            // Mise à jour directe avec les champs validés
+            $depense->update($validatedData);
+
             return response()->json([
-                'message' => 'update project',
+                'message' => 'Dépense mise à jour avec succès.',
                 'data' => $depense,
             ]);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->getMessage(),
-
-            ]);
+                'error' => 'Une erreur est survenue.',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

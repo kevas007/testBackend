@@ -9,7 +9,9 @@ class Categorie extends Model
 
 {
     use HasFactory;
-    protected $fillable = [ 'nom'];
+    protected $fillable = [ 'name'];
+
+    protected $table = 'categories';
     public function depense()
     {
         return $this->hasMany(Depense::class);

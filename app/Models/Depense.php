@@ -19,6 +19,6 @@ class Depense extends Model
     ];
 
     public function categorie(){
-        return $this->hasOne(Categorie::class);
+        return $this->belongsTo(Categorie::class);
     }
 }
