@@ -39,7 +39,7 @@ class DepenseController extends Controller
                 'montant' => 'required|numeric',
                 'date' => 'required|date',
                 'categorie_id' => 'required|exists:categories,id',
-                'src' => 'nullable|file|mimes:pdf|max:2048',
+                'src' => 'nullable|file|max:2048',
                 'description' => 'nullable|string',
             ]);
 
@@ -89,17 +89,20 @@ class DepenseController extends Controller
     public function update(Request $request, Depense $depense)
     {
         try {
+
+            // Étape 1 : valider les données de base (hors 'src')
             $validatedData = $request->validate([
                 'titre' => 'required|string|max:255',
                 'montant' => 'required|numeric',
                 'date' => 'required|date',
                 'categorie_id' => 'required|exists:categories,id',
-                'src' => 'nullable|file|mimes:pdf|max:2048',
                 'description' => 'nullable|string',
+                'src' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,webp|max:2048'
             ]);
 
-            // Si un nouveau fichier PDF est envoyé, remplace l'ancien
-            if ($request->hasFile('src')) {
+
+            // Étape 2 : gestion du fichier justificatif
+            if ($request->hasFile('src') && $request->file('src')->isValid()) {
                 // Supprimer l'ancien fichier si présent
                 if ($depense->src && \Storage::disk('public')->exists($depense->src)) {
                     \Storage::disk('public')->delete($depense->src);
@@ -108,15 +111,22 @@ class DepenseController extends Controller
                 // Enregistrer le nouveau fichier
                 $path = $request->file('src')->store('justificatifs', 'public');
                 $validatedData['src'] = $path;
+            } elseif ($request->has('delete_src') && $request->input('delete_src') === '1') {
+                // Cas : utilisateur a demandé la suppression du fichier
+                if ($depense->src && \Storage::disk('public')->exists($depense->src)) {
+                    \Storage::disk('public')->delete($depense->src);
+                }
+                $validatedData['src'] = null;
             }
 
+
+            // Étape 3 : mise à jour de la dépense
             $depense->update($validatedData);
 
             return response()->json([
                 'message' => 'Dépense mise à jour avec succès.',
                 'data' => $depense,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Une erreur est survenue.',
@@ -124,7 +134,6 @@ class DepenseController extends Controller
             ], 500);
         }
     }
-
 
 
     /**
